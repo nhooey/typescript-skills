@@ -6,6 +6,12 @@ Each skill is a self-contained directory `skills/<name>/` with a `SKILL.md`
 that an agent loads on demand. Skills are built by
 [`agent-skill-flake`](https://github.com/nhooey/agent-skill-flake).
 
+## Skills
+
+| Skill                                                                                        | What it does                                                                                                                                                                        |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`typescript-hygiene-functional-style`](skills/typescript-hygiene-functional-style/SKILL.md) | Pure functional TypeScript: small pure functions over readonly data, effects at the edges, at a library tier set in the preferences: the standard library, then remeda, then Immer. |
+
 ## Install
 
 ```bash
@@ -19,6 +25,7 @@ nix run github:nhooey/typescript-skills#install
 Package outputs:
 
 - `agent-skills-nhooey-typescript-all` — the aggregate of every skill (also `default`)
+- `agent-skill-nhooey-typescript-hygiene-functional-style`
 
 ## Development
 

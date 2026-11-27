@@ -1,5 +1,5 @@
 {
-  description = "typescript-skills: Agent skills for writing TypeScript, as a Nix flake";
+  description = "typescript-skills: Agent skills for writing TypeScript, such as pure functional style in a chosen tier of libraries, as a Nix flake";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -42,11 +42,6 @@
       ...
     }@inputs:
     let
-      # Each skill is a directory under ./skills. Until the first one lands
-      # there is no ./skills to build, install or test, so the outputs below
-      # that need it are empty.
-      hasSkills = builtins.pathExists ./skills;
-
       # The skills this repo outputs: every skill under ./skills built into
       # per-skill packages plus the base install/preview apps. The dev-shell
       # skill set is NOT an output here — it lives in the `skills-devshell/`
@@ -98,24 +93,21 @@
       perSystem =
         { system, pkgs, ... }:
         {
-          packages = if hasSkills then base.packages.${system} else { };
+          packages = base.packages.${system};
 
-          apps = if hasSkills then base.apps.${system} else { };
+          apps = base.apps.${system};
 
           # Build every skill package and the aggregate under `nix flake
           # check`, so a skill that fails to build fails the check rather
           # than only `nix build`. `default` is the aggregate again. Then run
           # each skill's "Your preferences" command line against a skill
           # folder symlinked into a fake Nix store.
-          checks = nixpkgs.lib.optionalAttrs hasSkills (
-            removeAttrs base.packages.${system} [ "default" ]
-            // {
-              preferences-section-test = pkgs.runCommand "preferences-section-test" { } ''
-                ${pkgs.bash}/bin/bash ${./checks/preferences-section-test.sh} ${./skills}
-                touch $out
-              '';
-            }
-          );
+          checks = removeAttrs base.packages.${system} [ "default" ] // {
+            preferences-section-test = pkgs.runCommand "preferences-section-test" { } ''
+              ${pkgs.bash}/bin/bash ${./checks/preferences-section-test.sh} ${./skills}
+              touch $out
+            '';
+          };
 
           # `nix fmt` runs nixfmt over `.nix` and prettier over `.md` / `.yaml`;
           # the module also surfaces a `checks.${system}.treefmt` so `nix flake
